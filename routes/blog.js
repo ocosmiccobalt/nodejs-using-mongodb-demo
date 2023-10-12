@@ -21,6 +21,20 @@ router.get('/posts', async function (req, res) {
   res.render('posts-list', { posts: posts });
 });
 
+router.get('/posts/:id', async function (req, res) {
+  const postId = new ObjectId(req.params.id);
+  const post = await db
+    .getDb()
+    .collection('posts')
+    .findOne({ _id: postId }, { summary: 0 });
+
+  if (!post) {
+    return res.status(404).render('404');
+  }
+
+  res.render('post-detail', { post: post });
+});
+
 router.get('/new-post', async function (req, res) {
   const authors = await db.getDb().collection('authors').find().toArray();
   res.render('create-post', { authors: authors });
