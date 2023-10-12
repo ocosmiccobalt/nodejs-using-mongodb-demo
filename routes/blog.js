@@ -21,8 +21,18 @@ router.get('/posts', async function (req, res) {
   res.render('posts-list', { posts: posts });
 });
 
-router.get('/posts/:id', async function (req, res) {
-  const postId = new ObjectId(req.params.id);
+router.get('/posts/:id', async function (req, res, next) {
+  let postId = req.params.id;
+
+  try {
+    postId = new ObjectId(postId);
+  } catch (error) {
+    // Set a response
+    return res.status(404).render('404');
+    // Or forward errors to the default error handling middleware
+    // return next(error);
+  }
+
   const post = await db
     .getDb()
     .collection('posts')
